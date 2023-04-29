@@ -1,0 +1,439 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "description": "API for MyNoteApp",
+        "title": "MyNoteApp API",
+        "version": "1.0.0"
+    },
+    "components": {
+        "requestBodies": {
+            "UserSignupAndLoginCredentials": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "username": {
+                                    "type": "string",
+                                    "example": "John"
+                                },
+                                "password": {
+                                    "type": "string",
+                                    "example": "Doe"
+                                }
+                            }
+                        }
+                    }
+                },
+                "required": true
+            }
+        },
+        "schemas": {
+            "Res200": {
+                "type": "object",
+                "properties": {
+                    "success": {
+                        "type": "boolean"
+                    },
+                    "message": {
+                        "type": "string"
+                    }
+                }
+            },
+            "Res400And401": {
+                "type": "object",
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "message": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT",
+                "name": "Authorization",
+                "in": "header"
+            }
+        },
+        "parameters": {
+            "UserIdInQuery": {
+                "name": "userId",
+                "description": "The ID of the user.",
+                "in": "query",
+                "required": true,
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "NoteIdInQuery": {
+                "name": "_id",
+                "description": "The ID of the note.",
+                "in": "query",
+                "required": true,
+                "schema": {
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "paths": {
+        "/api/user/signup": {
+            "post": {
+                "summary": "Create a user.",
+                "tags": [
+                    "User"
+                ],
+                "description": null,
+                "operationId": "signup",
+                "requestBody": {
+                    "$ref": "#/components/requestBodies/UserSignupAndLoginCredentials",
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Res200"
+                                }
+                            }
+                        },
+                        "description": "If the user is successfully created, the response will be a JSON object with a success property set to true and a userId property set to the user's ID. If the user is not successfully created, the response will be a JSON object with a success property set to false and a message property set to the error message."
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Res400And401"
+                                }
+                            }
+                        },
+                        "description": "Relevant parameters in body or query are missing."
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Res400And401"
+                                }
+                            }
+                        },
+                        "description": "If the user is not successfully created due to lacking of relevant properties in the body, the response will be a JSON object with a success property set to false and a message property set to the error message."
+                    }
+                }
+            }
+        },
+        "/api/user/login": {
+            "post": {
+                "summary": "Login a user.",
+                "tags": [
+                    "User"
+                ],
+                "description": null,
+                "operationId": "login",
+                "requestBody": {
+                    "$ref": "#/components/requestBodies/UserSignupAndLoginCredentials",
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "userId": {
+                                            "type": "string"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "If the user enters the correct password for the username."
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Res400And401"
+                                }
+                            }
+                        },
+                        "description": "Relevant parameters in body or query are missing."
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Res400And401"
+                                }
+                            }
+                        },
+                        "description": "If the user fail to login due to lacking of relevant properties in the body or invalid login credentials (username or password)."
+                    }
+                }
+            }
+        },
+        "/api/notes": {
+            "post": {
+                "summary": "Create a note",
+                "tags": [
+                    "Note"
+                ],
+                "description": null,
+                "operationId": "create note",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Födelsedagar att komma ihåg"
+                                    },
+                                    "text": {
+                                        "type": "string",
+                                        "example": "Fjälla, Mickan, Calle, Earthis, morsan, Arne Weise, Pekka Langer"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/UserIdInQuery"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Res200"
+                                }
+                            }
+                        },
+                        "description": "Note successfully created."
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Res400And401"
+                                }
+                            }
+                        },
+                        "description": "Invalid JSON syntax OR relevant parameters in body or query are missing OR title and/or text is too short or too long."
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Res400And401"
+                                }
+                            }
+                        },
+                        "description": "No authorization header or invalid token."
+                    }
+                }
+            },
+            "get": {
+                "summary": "Show all notes",
+                "tags": [
+                    "Note"
+                ],
+                "description": null,
+                "operationId": "get/show all notes",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/UserIdInQuery"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Res200"
+                                }
+                            }
+                        },
+                        "description": "Notes successfully retrieved."
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Res400And401"
+                                }
+                            }
+                        },
+                        "description": "Invalid JSON syntax OR wrong or no userId in query."
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Res400And401"
+                                }
+                            }
+                        },
+                        "description": "No authorization header or invalid token."
+                    }
+                }
+            },
+            "put": {
+                "summary": "Update a note",
+                "tags": [
+                    "Note"
+                ],
+                "description": null,
+                "operationId": "update note",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Födelsedagar att komma ihåg (uppdaterad)"
+                                    },
+                                    "text": {
+                                        "type": "string",
+                                        "example": "Carl-Uno Sjöblom, Povel Ramel, Thore Skogman, Pekka Langer, Arne Weise"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/UserIdInQuery"
+                    },
+                    {
+                        "$ref": "#/components/parameters/NoteIdInQuery"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Res200"
+                                }
+                            }
+                        },
+                        "description": "Note successfully updated."
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Res400And401"
+                                }
+                            }
+                        },
+                        "description": "Invalid JSON syntax OR relevant parameters in body or query are missing OR title and/or text is too short or too long."
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Res400And401"
+                                }
+                            }
+                        },
+                        "description": "No authorization header or invalid token."
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete a note",
+                "tags": [
+                    "Note"
+                ],
+                "description": null,
+                "operationId": "delete note",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/UserIdInQuery"
+                    },
+                    {
+                        "$ref": "#/components/parameters/NoteIdInQuery"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Res200"
+                                }
+                            }
+                        },
+                        "description": "Note successfully deleted."
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Res400And401"
+                                }
+                            }
+                        },
+                        "description": "Invalid JSON syntax OR wrong or no userId in query."
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Res400And401"
+                                }
+                            }
+                        },
+                        "description": "No authorization header or invalid token."
+                    }
+                }
+            }
+        }
+    }
+}
